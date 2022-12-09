@@ -49,7 +49,8 @@ echo "keyserver hkp://keyserver.ubuntu.com:80" | tee /github/home/.gnupg/gpg.con
 
 cd "$pkgbuild_dir"
 
-pkgname=$(grep -E 'pkgname' .SRCINFO | sed -e 's/.*= //')
+pkgbase=$(grep -E 'pkgbase' .SRCINFO | sed -e 's/.*= //')
+pkgnames=($(grep -E 'pkgname' .SRCINFO | sed -e 's/.*= //'))
 
 install_deps() {
     # install all package dependencies
@@ -67,9 +68,11 @@ case $target in
         # shellcheck disable=SC1091
         source /etc/makepkg.conf # get PKGEXT
 
-        namcap "${pkgname}"-*"${PKGEXT}"
-        pacman -Qip "${pkgname}"-*"${PKGEXT}"
-        pacman -Qlp "${pkgname}"-*"${PKGEXT}"
+        for pkgname in "${pkgnames[@]}"; do
+            namcap "${pkgname}"-*"${PKGEXT}"
+            pacman -Qip "${pkgname}"-*"${PKGEXT}"
+            pacman -Qlp "${pkgname}"-*"${PKGEXT}"
+        done
         ;;
     run)
         install_deps
