@@ -54,7 +54,7 @@ pkgnames=($(grep -E 'pkgname' .SRCINFO | sed -e 's/.*= //'))
 
 install_deps() {
     # install all package dependencies
-    grep -E 'depends' .SRCINFO | \
+    awk '$0 ~ /depends/ && $0 !~ /optdepends/' .SRCINFO | \
         sed -e 's/.*depends = //' -e 's/:.*//' | \
         xargs yay -S --noconfirm
 }
